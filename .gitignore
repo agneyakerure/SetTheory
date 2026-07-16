@@ -1,0 +1,16 @@
+# Personal data never lives in the repo.
+# Your library, your purchases, your notes, and your music stay on your machine.
+
+# Bandcamp collection, resolved labels, transcoded audio
+.cache/
+
+# Your joined library — rebuild with: python3 build.py
+data.json
+
+# Your label notes and exploration marks
+state.json
+
+# Python / macOS cruft
+__pycache__/
+*.pyc
+.DS_Store

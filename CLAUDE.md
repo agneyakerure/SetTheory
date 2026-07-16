@@ -9,6 +9,43 @@ spine, same storage contract, same dev tooling — so the two can merge later if
 this earns it. The parked merge argument lives in `Sessions/IDEAS.md`; read it
 before proposing integration.
 
+**Read `IDEAS.md` before proposing anything.** It holds what the user's actual
+Bandcamp and Rekordbox data says, and several obvious-looking features are already
+dead on those numbers. Most importantly: **the map is sparse on purpose** — that's
+a decision made with the data in hand, not an unfinished job. Three docs, one job
+each: this file is *what is*, `README.md` is *why*, `IDEAS.md` is *what might be*.
+
+The user is a DJ, not a full-time engineer — he cares about the digging problem,
+not the plumbing. Explain trade-offs in those terms.
+
+## The domain (read this before touching build.py)
+
+The taxonomy is the user's, it predates this tool, and it is **not** guessable from
+the code:
+
+- **Green** = fun and light. **Red** = energetic, peak time. **Blue** = deep,
+  meditative, or anything else.
+- **`+` / `-`** = positive / negative valence. The *count* is the tempo band: `+`
+  under 130, `++` 130–140, `+++` 140+, `++++` above that. Same on the `-` side.
+- **Not every colour reaches every band, and that's data.** Red has a `++++`; Blue
+  doesn't, because he owns no blue music that fast. The ragged edge is the map
+  working. Never pad it, never hide it.
+- **`Red ++ BUFO` is not a fourth axis.** BUFO is Ben UFO, his favourite DJ — a
+  nickname on that one cell. `cell_key()` parses it into the `note` field and the
+  UI shows it beside the count. Don't invent a taxonomy from it.
+
+**The source of truth is the m3u8 folder — about 140 tracks.** That is his real
+library for this purpose.
+
+**His full Rekordbox export (~1,413 tracks) is mostly noise he does not use**, and
+it is actively misleading: old Mixed In Key comments (`4A - Energy 6`), a My Tag
+vocabulary in `/* ... */` (`ORG`, `STR`, `WNK`, `MTL`, `Tension`/`Release`,
+`Warmup`/`Peak Hour`), and a separate **seven-colour `Colour` field that does not
+agree with the playlist colour names** — the cell called "Red ++ BUFO" contains 17
+*orange* tracks and one red one. These are unrelated namespaces that happen to
+share words. Reading any of it as the system will send you badly wrong; it already
+did once. Only the cell playlists count. **Ask before building on any other field.**
+
 ## Principles
 
 - **Plain Markdown is the only user storage.** `~/Documents/SetTheory/labels.md`,
@@ -138,7 +175,33 @@ cat .devdata/labels.md          # the write is only real if it landed here
 ./dev.sh                        # restart — does it parse back identically?
 ```
 
-**Frontend claims need `./devbrowser.py`, not a reading.** Each invocation is a
-fresh page context, so a click and the assertion about it must be in the *same*
-expression. The status-clobbering race above was invisible to curl and to the
-source; one scripted click exposed it in seconds.
+**Frontend claims need `./devbrowser.py`, not a reading.** It runs JavaScript in
+the real DOM of the dev app and prints what a human would see.
+
+```sh
+./dev.sh                                    # devbrowser only talks to 4398
+./devbrowser.py 'document.querySelectorAll(".pick").length'          # -> 3
+./devbrowser.py --file probe.js
+./devbrowser.py --stop                      # quit the headless browser
+
+# Click into a colour and read the grid — note both halves in ONE expression:
+./devbrowser.py '(() => {
+  document.querySelector(`button.pick[data-c="Blue"]`).click();
+  return [...document.querySelectorAll("#cells .cell")]
+    .map(c => c.querySelector(".tag").textContent + " " + c.querySelectorAll(".trk").length)
+    .join(", ");
+})()'
+```
+
+Requirements: **Google Chrome** at `/Applications/Google Chrome.app` and nothing
+else — it speaks the DevTools Protocol over a hand-rolled stdlib WebSocket client,
+so there's no driver and no pip install. It runs headless against a scratch profile
+and hard-wires the throwaway port **4398**, so it cannot click anything in the real
+app. CDP port is **9223** (Sessions' copy owns 9222 — don't collide them).
+
+Two traps, both of which have already cost time:
+- **Each invocation is a fresh page context.** A click and the assertion about it
+  must be in the *same* expression, or you'll read a page where the click never
+  happened and conclude the feature is broken.
+- **A source reading is not evidence.** The status-clobbering race above was
+  invisible to curl *and* to the code; one scripted click exposed it in seconds.

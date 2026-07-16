@@ -184,7 +184,7 @@ def main(fan_url=None):
 
     data = {'colors': COLORS, 'energy': ENERGY, 'tracks': tracks, 'labels': lab_out,
             'built': time.strftime('%Y-%m-%d %H:%M')}
-    json.dump(data, open(os.path.join(HERE, 'data.json'), 'w'), indent=1)
+    json.dump(data, open(os.path.join(CACHE, 'data.json'), 'w'), indent=1)
     m = sum(1 for t in tracks if t['bc_url'])
     print(f"\n{len(tracks)} tracks | {m} matched to Bandcamp | {len(lab_out)} labels")
     for c in COLORS:

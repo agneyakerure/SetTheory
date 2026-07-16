@@ -1,0 +1,141 @@
+/* SetTheory — dark only, deliberately. Same reasoning as Sessions: there is no
+   light branch to keep in sync, and you dig at night. The colour you pick is the
+   only light in the room — setColor() stamps data-color on #app, which sets
+   --area, and every accent below inherits it. */
+
+* { box-sizing: border-box; margin: 0; padding: 0 }
+
+:root {
+  --bg: #0c0c0e;
+  --panel: #141418;
+  --line: #26262e;
+  --tx: #e8e8ec;
+  --dim: #83838f;
+  --faint: #4a4a55;
+  --area: #83838f;                 /* replaced per colour by setColor() */
+  --green: #4ade80;
+  --red: #f05252;
+  --blue: #60a5fa;
+}
+
+#app[data-color="Green"] { --area: var(--green) }
+#app[data-color="Red"]   { --area: var(--red) }
+#app[data-color="Blue"]  { --area: var(--blue) }
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font: 14px/1.5 ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  padding-bottom: 84px;
+}
+#app { max-width: 1180px; margin: 0 auto; padding: 22px }
+.view[hidden] { display: none }
+
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer }
+a { color: var(--dim); text-decoration: none; border-bottom: 1px solid #333 }
+a:hover { color: var(--tx) }
+
+.bar { display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px }
+h1 { font-size: 15px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase }
+.meta { color: var(--dim); font-size: 12px }
+
+/* ---------------------------------------------------------------- picker */
+.ask { color: var(--dim); font-size: 19px; margin: 44px 0 20px }
+.picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px }
+.pick {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 26px 22px; text-align: left; transition: transform .14s, border-color .14s;
+}
+.pick:hover { transform: translateY(-3px) }
+.pick[data-c="Green"]:hover { border-color: var(--green) }
+.pick[data-c="Red"]:hover   { border-color: var(--red) }
+.pick[data-c="Blue"]:hover  { border-color: var(--blue) }
+.pick .dot { width: 30px; height: 30px; border-radius: 50%; margin-bottom: 16px }
+.pick[data-c="Green"] .dot { background: var(--green) }
+.pick[data-c="Red"] .dot   { background: var(--red) }
+.pick[data-c="Blue"] .dot  { background: var(--blue) }
+.pick h2 { font-size: 19px; font-weight: 600; margin-bottom: 5px }
+.pick p { color: var(--dim); font-size: 12.5px; line-height: 1.45 }
+.pick .n { color: var(--dim); font-size: 12px; margin-top: 14px; font-variant-numeric: tabular-nums }
+
+/* ------------------------------------------------------------------ zone */
+.back { color: var(--dim); font-size: 12.5px; margin-bottom: 18px }
+.back:hover { color: var(--tx) }
+.zhead { display: flex; align-items: center; gap: 11px; margin-bottom: 4px }
+.zhead .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--area) }
+.zhead h2 { font-size: 21px; font-weight: 600 }
+.sub { color: var(--dim); font-size: 12.5px; margin-bottom: 20px }
+.zone { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; align-items: start }
+@media (max-width: 900px) { .zone { grid-template-columns: 1fr } }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px }
+.ph {
+  padding: 12px 15px; border-bottom: 1px solid var(--line); font-size: 11px;
+  letter-spacing: .11em; text-transform: uppercase; color: var(--dim);
+  display: flex; justify-content: space-between; gap: 10px;
+}
+
+/* ----------------------------------------------------------------- cells */
+.cell { border-bottom: 1px solid var(--line) }
+.cell:last-child { border: none }
+.cellh { display: flex; align-items: center; gap: 10px; padding: 8px 15px; background: #101014 }
+.tag {
+  font-family: ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 700;
+  letter-spacing: 1px; min-width: 42px; color: var(--area);
+}
+.cellh .c { color: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums }
+.cell.empty .cellh { opacity: .34 }
+.cell.empty .why { color: var(--dim); font-size: 11.5px; font-style: italic; padding: 0 15px 8px }
+
+.trk { display: flex; align-items: center; gap: 11px; padding: 8px 15px; border-top: 1px solid #1c1c22; cursor: pointer }
+.trk:hover { background: #1a1a20 }
+.trk.on { background: #1e1e26 }
+.trk.miss { opacity: .4 }
+.play { width: 19px; flex: 0 0 19px; color: var(--dim); font-size: 10px }
+.trk.on .play { color: var(--area) }
+.ti { flex: 1; min-width: 0 }
+.ti .t, .ti .a { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.ti .t { font-size: 13.5px }
+.ti .t.untitled { color: var(--faint) }
+.ti .a { color: var(--dim); font-size: 11.5px }
+.st { color: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums; flex: 0 0 auto }
+.bc { flex: 0 0 auto; font-size: 10px; color: #555; border: none }
+.bc:hover { color: var(--area) }
+
+/* ---------------------------------------------------------------- labels */
+.lab { padding: 13px 15px; border-bottom: 1px solid var(--line) }
+.lab:last-of-type { border: none }
+.lr { display: flex; align-items: center; gap: 9px }
+.lname { font-size: 14px; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.cov { color: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums; flex: 0 0 auto }
+.chips { display: flex; gap: 3px; flex: 0 0 auto }
+.chip { width: 7px; height: 7px; border-radius: 50% }
+.chip[data-c="Green"] { background: var(--green) }
+.chip[data-c="Red"]   { background: var(--red) }
+.chip[data-c="Blue"]  { background: var(--blue) }
+.status { display: flex; gap: 5px; margin-top: 9px }
+.sb { font-size: 10.5px; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--line); color: var(--dim) }
+.sb:hover { color: var(--tx) }
+.sb.sel { background: var(--tx); color: #000; border-color: var(--tx); font-weight: 600 }
+.nt {
+  width: 100%; margin-top: 8px; background: #0d0d10; border: 1px solid var(--line);
+  border-radius: 7px; color: var(--tx); padding: 7px 9px; font: inherit; font-size: 12.5px;
+  resize: vertical; min-height: 32px;
+}
+.nt::placeholder { color: var(--faint) }
+.nt:focus { outline: none; border-color: var(--area) }
+.add { width: 100%; padding: 11px; color: var(--dim); font-size: 12.5px; border-top: 1px solid var(--line) }
+.add:hover { color: var(--tx); background: #1a1a20 }
+.empty-note { padding: 22px 15px; color: var(--dim); font-size: 12.5px; line-height: 1.6 }
+
+/* ---------------------------------------------------------------- player */
+.bar-player {
+  position: fixed; bottom: 0; left: 0; right: 0; background: #111116;
+  border-top: 1px solid var(--line); padding: 11px 22px; display: flex;
+  align-items: center; gap: 15px; backdrop-filter: blur(10px);
+}
+.bar-player[hidden] { display: none }
+.bar-player .now { flex: 0 0 260px; min-width: 0 }
+.bar-player .now .t { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.bar-player .now .a { color: var(--dim); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+audio { flex: 1; height: 34px }

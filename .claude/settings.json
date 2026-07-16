@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 build.py)",
+      "Bash(python3 build.py *)",
+      "Bash(python3 server.py)",
+      "Bash(python3 server.py *)",
+      "Bash(python3 -m py_compile *)",
+      "Bash(/usr/bin/python3 -m py_compile *)",
+      "Bash(./dev.sh)",
+      "Bash(./dev.sh *)",
+      "Bash(./install.sh)",
+      "Bash(./make-app.sh)",
+      "Bash(./update.sh)",
+      "Bash(chmod +x *)",
+      "Bash(open http://localhost:8420)",
+      "Bash(open http://127.0.0.1:8420)",
+      "Bash(ffmpeg -nostdin *)",
+      "Bash(ffprobe *)",
+      "Bash(mkdir -p *)"
+    ]
+  }
+}

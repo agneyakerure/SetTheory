@@ -68,8 +68,9 @@ The scheme this was built around:
   (`+` under 130, `++` 130–140, `+++` 140+, `++++` above)
 
 Yours will differ. The colors and bands live at the top of `build.py`
-(`COLORS`, `ENERGY`) and the descriptions in `app.html` (`BLURB`); the playlist
-filenames just need to read `<Color> <energy>.m3u8`. Nothing else assumes them.
+(`COLORS`, `ENERGY`), the descriptions in `app/app.js` (`BLURB`), and the accent
+colors in `app/style.css`; the playlist filenames just need to read
+`<Color> <energy>.m3u8`. Nothing else assumes them.
 
 ## Setup
 
@@ -83,16 +84,18 @@ brew install ffmpeg    # skip if you're all-MP3
 # Export your cell playlists as m3u8 to a folder        -> ~/Desktop/Rekordbox exports
 
 python3 build.py https://bandcamp.com/YOURNAME
-python3 server.py
+./install.sh
 ```
 
-Then open **http://localhost:8420**.
+That builds `SetTheory.app` — the Dock icon. Launch it (**right-click → Open** the
+first time, to clear macOS's unidentified-developer warning). The click starts the
+server if it isn't running, and focuses the window if it is.
 
 The first build resolves every label against Bandcamp and takes a few minutes;
 it's cached, so re-runs are seconds. Re-run `build.py` after a fresh Rekordbox
-export. The first `server.py` run warms the audio cache in the background.
+export. The first launch warms the audio cache in the background.
 
-Paths are configurable:
+Everything runs on `127.0.0.1:4322`. Paths are configurable:
 
 ```sh
 SETTHEORY_XML=~/path/to/collection.xml \
@@ -102,11 +105,25 @@ SETTHEORY_FAN=https://bandcamp.com/YOURNAME python3 build.py
 
 ## Your data
 
-Stays yours, and stays out of this repo. `data.json` is derived and rebuildable.
-`state.json` is your notes. `.cache/` holds your collection and your transcoded
-audio. All are gitignored.
+**Your notes live outside this repo**, as plain Markdown at
+`~/Documents/SetTheory/labels.md` (override with `SETTHEORY_DATA_DIR`). No
+database, no lock-in. Open it in any editor and it reads like notes, because it is:
 
-`build.py` is the only thing that touches the network, and only Bandcamp.
+```markdown
+## Incienso
+**Status:** walked
+**Colors:** Blue, Green
+**URL:** https://incienso.bandcamp.com
+
+Warm and dubby. The 2023 run is the good one — start there next time.
+```
+
+Everything else is derived and rebuildable: `.cache/` holds your Bandcamp
+collection, the joined map, and transcoded audio. All gitignored.
+
+**`build.py` is the only thing that touches the network**, and only Bandcamp. The
+app itself never does — so it keeps working on the last map you built, even when
+Bandcamp changes something.
 
 ## Honest limits
 

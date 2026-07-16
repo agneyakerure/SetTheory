@@ -1,13 +1,17 @@
-# Personal data never lives in the repo.
+# Personal data never lives in the repo — it's in ~/Documents/SetTheory.
 # Your library, your purchases, your notes, and your music stay on your machine.
 
-# Bandcamp collection, resolved labels, transcoded audio
+# Bandcamp collection, resolved labels, the derived map, transcoded audio
 .cache/
 
-# Your joined library — rebuild with: python3 build.py
-data.json
+# Throwaway notes for ./dev.sh — never real data, never committed.
+.devdata/
 
-# Your label notes and exploration marks
+# Built macOS app bundle — regenerate with ./make-app.sh (bakes a machine path)
+SetTheory.app/
+
+# Legacy from the first prototype; the map now lives in .cache/
+data.json
 state.json
 
 # Python / macOS cruft

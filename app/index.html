@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SetTheory</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="app">
+
+  <section id="choose" class="view">
+    <header class="bar"><h1>SetTheory</h1><span class="meta" id="choose-meta"></span></header>
+    <p class="ask">What are you feeling?</p>
+    <div class="picker" id="picker"></div>
+  </section>
+
+  <section id="zone" class="view" hidden>
+    <header class="bar"><h1>SetTheory</h1><span class="meta" id="zone-meta"></span></header>
+    <button class="back" id="back">← all colours</button>
+    <div class="zhead"><span class="dot"></span><h2 id="zone-name"></h2></div>
+    <p class="sub" id="zone-sub"></p>
+    <div class="zone">
+      <div class="panel">
+        <div class="ph"><span>What you already have</span><span>listen — is this today?</span></div>
+        <div id="cells"></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span>Where this vibe lives</span><span id="lab-count"></span></div>
+        <div id="labels"></div>
+        <button class="add" id="add">+ add a label you want to explore</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="bar-player" id="player" hidden>
+  <div class="now"><div class="t" id="now-title"></div><div class="a" id="now-artist"></div></div>
+  <audio id="audio" controls></audio>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

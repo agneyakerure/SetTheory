@@ -24,6 +24,10 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 HERE = Path(__file__).resolve().parent
 APP = HERE / "app"
+# Which settheory.py this process is actually running. The Dock launcher compares
+# it against the file on disk, so a server started before an update can't quietly
+# keep serving last week's app.
+SOURCE_VERSION = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 CACHE = HERE / ".cache"
 AUDIO = CACHE / "audio"
 DATA_DIR = Path(os.environ.get("SETTHEORY_DATA_DIR", Path.home() / "Documents" / "SetTheory"))
@@ -224,6 +228,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(state())
         if route == "/api/ping":
             return self.send_json({"ok": True, "port": PORT})
+        if route == "/api/version":
+            return self.send_json({"source": SOURCE_VERSION, "pid": os.getpid()})
         if route == "/audio":
             return self.serve_audio(parse_qs(u.query))
         return self.serve_static(route)
@@ -330,3 +336,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

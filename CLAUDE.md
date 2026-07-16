@@ -82,6 +82,24 @@ Two non-obvious things it rests on, both load-bearing:
 **the colour you pick is the only light in the room** (`data-color` on `#app` sets
 `--area`, inherited by every accent).
 
+**`SetTheory.app`** — the Dock icon, built by `make-app.sh` (gitignored; it bakes an
+absolute path, so it's per-machine). **The click is the only maintenance there is**,
+and all three branches are load-bearing:
+- *Nothing listening* → start the server.
+- *Running, source hash matches `/api/version`* → do nothing but focus. Restarting a
+  healthy server on every click would be its own bug.
+- *Running, hash differs* → **stale**: kill by PID from `lsof` (never by name — that
+  would also kill a running `./dev.sh`) and relaunch. Without this check, a server
+  started before an update stays up forever, quietly serving old code.
+
+It focuses an existing window via `osascript` rather than `open -na`, which forces a
+new browser instance and gives you one window per click. Launcher failures land in
+`~/Library/Logs/SetTheory.log`, not `/dev/null`.
+
+There is deliberately **no autostart**, for the same reason as Sessions: macOS walls
+`~/Documents` off from background agents, and both the repo and the data dir live
+there.
+
 ## Gotchas — each of these is a bug that actually happened
 
 - **Units.** A label's track count and its release count are different things. The
